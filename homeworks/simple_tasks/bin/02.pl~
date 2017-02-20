@@ -37,7 +37,8 @@ sub run {
 		    		$is_simple = 1;
 		    	}
 		    }
-		if ($is_simple == 1) {
+		if ($is_simple == 1) 
+			{
 				print "$i\n";
 			}
 		}
