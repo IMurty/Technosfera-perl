@@ -28,13 +28,8 @@ run("ab", "c") - печатает "0\n"
 
 sub run {
     my ($str, $substr) = @_;
-    my $num = 0;
-
-    # ...
-    # Вычисление количества вохождений строки $substr в строку $str,
-    # ...
-
-    print "$num\n";
+   	my @matches = $str =~ m/$substr/g;
+    print @matches."\n";
 }
-
 1;
+

@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use Math::Complex;
 
 =encoding UTF8
 =head1 SYNOPSYS
@@ -31,12 +32,28 @@ sub run {
 
     my $x1 = undef;
     my $x2 = undef;
-
-    #...
-    #Вычисление корней
-    #...
-
-    print "$x1, $x2\n";
+	my $discr = ($b_value*$b_value)-(4*$a_value*$c_value);
+	#print "$discr\n";
+	my $sqrt_d;
+	if (($discr < 0) or ($a_value == 0)) {
+		print "No solution!\n"
+		
+	}
+	elsif ($discr == 0) {
+		$x1 = (-$b_value)/(2*$a_value);
+		$x2 = $x1;
+		print "$x1, $x2\n";
+	}
+	else {
+		$sqrt_d = sqrt($discr);
+		#print "$sqrt_d\n";
+		$x1 = (-$b_value + $sqrt_d)/(2*$a_value);
+		$x2 = (-$b_value - $sqrt_d)/(2*$a_value);
+		print "$x1, $x2\n";
+	}  
 }
-
 1;
+my ($av, $bv, $cv) = @ARGV[0..2];
+#print "$av, $bv, $cv \n";
+run($av, $bv, $cv);
+

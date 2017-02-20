@@ -27,10 +27,16 @@ sub run {
     my ($x, $y, $z) = @_;
     my $min = undef;
     my $max = undef;
-
-    # ...
-    # Вычисление минимума и максимума
-    # ...
+	{
+    	my $max1 = ($x > $y)? $x: $y;
+    	my $max2 = ($y > $z)? $y: $z;
+    	$max = ($max1 > $max2)? $max1: $max2;
+    }
+    {
+    	my $min1 = ($x < $y)? $x: $y;
+    	my $min2 = ($y < $z)? $y: $z;
+    	$min = ($min1 < $min2)? $min1: $min2;
+    }
 
     print "$min, $max\n";
 }

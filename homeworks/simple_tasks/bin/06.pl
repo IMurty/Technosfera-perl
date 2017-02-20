@@ -22,10 +22,10 @@ encode('#abc', 1) - печатает '$bcd'
 sub encode {
     my ($str, $key) = @_;
     my $encoded_str = '';
-
-    # ...
-    # Алгоритм шифрования
-    # ...
+	my @chars = split //, $str;
+    foreach (@chars){
+    	$encoded_str .= chr((ord($_)+$key)%127)
+    }
 
     print "$encoded_str\n";
 }
@@ -44,12 +44,11 @@ decode('$bcd', 1) - печатает '#abc'
 sub decode {
     my ($encoded_str, $key) = @_;
     my $str = '';
-
-    # ...
-    # Алгоритм дешифрования
-    # ...
-
+	my @chars = split //, $encoded_str;
+   	foreach (@chars){
+   		$str.= chr((ord($_)-$key+127)%127)
+   	}
     print "$str\n";
 }
-
 1;
+
