@@ -3,3 +3,6 @@
 *.swn
 *.swo
 *.aux
+*~
+MYMETA.*
+pm_to_blib
