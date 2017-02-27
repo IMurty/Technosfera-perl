@@ -24,7 +24,7 @@ sub encode {
     my $encoded_str = '';
 	my @chars = split //, $str;
     foreach (@chars){
-    	$encoded_str .= chr((ord($_)+$key)%127);
+    	$encoded_str .= chr((ord($_)+$key)%128);
     }
     print "$encoded_str\n";
 }
@@ -45,7 +45,7 @@ sub decode {
     my $str = '';
 	my @chars = split //, $encoded_str;
    	foreach (@chars){
-   		$str.= chr((ord($_)-$key+127)%127);
+   		$str.= chr((ord($_)-$key+128)%128);
    	}
     print "$str\n";
 }
