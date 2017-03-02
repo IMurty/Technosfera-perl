@@ -1,4 +1,5 @@
 package SecretSanta;
+
 use 5.010;
 use strict;
 use warnings;
@@ -47,6 +48,7 @@ PAIRS:{
 	return @res;
 }
 
+
 sub make_list {
 	my $href = shift;
 	my @members = @$href;
@@ -62,4 +64,29 @@ sub make_list {
 	}
 	return \%pairs;
 }
-1;
+
+
+
+my @members = 'A'..'Z';
+my %members; @members{@members} = ();
+my @pairs;
+for (1..@members/4) {
+	my ($one,$two) = keys %members;
+	delete $members{$one};
+	delete $members{$two};
+	push @pairs, [ $one, $two ];
+}
+
+my @list = sort { int(rand 3)-1 } @pairs, keys %members;
+@list = ();
+push @list, ["A", "B"];
+push @list, ["C", "D"];
+push @list, "E";
+push @list, "F";
+my @res = calculate(@list);
+my $i = 0;
+for (@res) {
+	print "$i ";
+	say join "→ ", @$_;
+	$i++;
+}
