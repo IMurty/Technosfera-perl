@@ -182,9 +182,7 @@ PERL_ARCHIVEDEP    =
 PERL_ARCHIVE_AFTER = 
 
 
-TO_INST_PM = lib/SecretSanta.pm \
-	tr.pl \
-	tst.pl
+TO_INST_PM = lib/SecretSanta.pm
 
 
 # --- MakeMaker platform_constants section:
@@ -859,9 +857,7 @@ ppd :
 
 pm_to_blib : $(FIRST_MAKEFILE) $(TO_INST_PM)
 	$(NOECHO) $(ABSPERLRUN) -MExtUtils::Install -e 'pm_to_blib({@ARGV}, '\''$(INST_LIB)/auto'\'', q[$(PM_FILTER)], '\''$(PERM_DIR)'\'')' -- \
-	  'lib/SecretSanta.pm' 'blib/lib/SecretSanta.pm' \
-	  'tr.pl' '$(INST_LIB)/tr.pl' \
-	  'tst.pl' '$(INST_LIB)/tst.pl' 
+	  'lib/SecretSanta.pm' 'blib/lib/SecretSanta.pm' 
 	$(NOECHO) $(TOUCH) pm_to_blib
 
 

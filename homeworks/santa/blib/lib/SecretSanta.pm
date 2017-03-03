@@ -51,14 +51,22 @@ sub make_list {
 	my $href = shift;
 	my @members = @$href;
 	my %pairs;
+	my $pairs_count = 0;
+	my $without_pairs = 0;
 	foreach (@members) {
 		if(ref $_) {
 			$pairs{@$_[0]} = @$_[1];
 			$pairs{@$_[1]} = @$_[0];
+			$pairs_count++;
 		}
 		else {
 			$pairs{$_} = 0;
+			$without_pairs++;
 		}
+	}
+	if (($pairs_count < 2 && $without_pairs < 2)   # [A, B], C;
+		||($pairs_count < 1 && $without_pairs < 3)) {  # A, B;
+			die "Need more members!";
 	}
 	return \%pairs;
 }
