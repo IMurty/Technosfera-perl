@@ -9,11 +9,9 @@ sub calculate {
 	my @res;
 	my $href = make_list(\@members);
 	my %pairs = %$href;
+PAIRS:{
 	my %hash_of_givers = %pairs;
 	my %hash_of_takers = %pairs;
-PAIRS:{
-	%hash_of_givers = %pairs;
-	%hash_of_takers = %pairs;
 	my @givers = sort keys %hash_of_givers;
 	my @takers = sort keys %hash_of_takers;
 	my $start_memb = $givers[0];
