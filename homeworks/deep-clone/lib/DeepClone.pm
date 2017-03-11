@@ -34,13 +34,46 @@ use warnings;
 
 =cut
 
-sub clone {
-	my $orig = shift;
-	my $cloned;
-	# ...
-	# deep clone algorith here
-	# ...
-	return $cloned;
-}
+sub pre_clone {
+	my $orign = shift;
+   my $map = shift;
+	my $clone;
+   if (!defined $orign) {
+   	return undef;
+   }
+	elsif (exists $map->{$orign}) {
+    	return $map->{$orign};
+   }
+	if (my $ref = ref $orign){
+	   if ($ref eq 'ARRAY') {
+	   	$map->{$orign} = $clone = [];
+	   	push @$clone, pre_clone($_, $map) for @$orign;
+			return $clone;
+	   }
+	   elsif ($ref eq 'HASH') {
+			$map->{$orign} = $clone = {};
+	   	$clone->{$_} = pre_clone($orign->{$_}, $map) for keys %$orign;
+			return $clone;
+	   }
+	   else {
+	   	die 'Undef';
+	   }
+	}
+	else {
+		return $orign;
+	}
+};
 
+sub clone {
+	my $orign = shift;
+	my $clone;
+	eval {
+		my $map = {};
+		$clone = pre_clone($orign, $map);
+	}
+	|| do {
+		$clone = undef;
+	};
+	return $clone;
+}
 1;
