@@ -1,0 +1,52 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use DDP;
+
+my $filepath = $ARGV[0];
+die "USAGE:\n$0 <log-file.bz2>\n"  unless $filepath;
+die "File '$filepath' not found\n" unless -f $filepath;
+
+my $parsed_data = parse_file($filepath);
+p $parsed_data;
+#report($parsed_data);
+exit;
+
+sub parse_file {
+    my $file = shift;
+
+    # you can put your code here
+
+    my $result;
+	my %ip_hash;
+	my %hash;
+    open my $fd, "-|", "bunzip2 < $file" or die "Can't open '$file': $!";
+    while (my $log_line = <$fd>) {
+		$log_line =~ m/^(\d{1,3}\.\d{1,3}\.\d{1,3})/;
+		if (exists $ip_hash{$1}) {
+			$ip_hash{$1}++;
+		}
+		else {
+			$ip_hash{$1} = 1;
+		}
+    }
+	my $ips = keys %ip_hash;
+	my @list = sort {$ip_hash{$b} <=> $ip_hash{$a}} keys %ip_hash;
+    close $fd;
+
+    # you can put your code here
+	@list = @list[0..9];
+	foreach (@list) {
+		$hash{$_} = $ip_hash{$_};
+	}
+
+    return \%hash;
+}
+
+sub report {
+    my $result = shift;
+
+    # you can put your code here
+
+}
