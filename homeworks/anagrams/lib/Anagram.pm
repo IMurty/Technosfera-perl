@@ -72,7 +72,7 @@ sub exists_in_arr {
 
 sub rm_small_arrs {
     my $unfiltred_hash_ref = shift;
-    my $filtred_hash       = {};
+    my $filtred_hash = {};
     foreach my $key ( keys %$unfiltred_hash_ref ) {
         my $words_arr_ref = delete $unfiltred_hash_ref->{$key};
         unless ( @$words_arr_ref < 2 ) {
