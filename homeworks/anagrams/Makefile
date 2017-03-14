@@ -159,7 +159,8 @@ C_FILES  =
 O_FILES  = 
 H_FILES  = 
 MAN1PODS = 
-MAN3PODS = lib/Anagram.pm
+MAN3PODS = lib/Anagram.pm \
+	lib/Anagram0.pm
 
 # Where is the Config information that we are using/depend on
 CONFIGDEP = $(PERL_ARCHLIBDEP)$(DFSEP)Config.pm $(PERL_INCDEP)$(DFSEP)config.h
@@ -182,7 +183,8 @@ PERL_ARCHIVEDEP    =
 PERL_ARCHIVE_AFTER = 
 
 
-TO_INST_PM = lib/Anagram.pm
+TO_INST_PM = lib/Anagram.pm \
+	lib/Anagram0.pm
 
 
 # --- MakeMaker platform_constants section:
@@ -409,9 +411,11 @@ POD2MAN = $(POD2MAN_EXE)
 
 
 manifypods : pure_all config  \
-	lib/Anagram.pm
+	lib/Anagram.pm \
+	lib/Anagram0.pm
 	$(NOECHO) $(POD2MAN) --section=3 --perm_rw=$(PERM_RW) -u \
-	  lib/Anagram.pm $(INST_MAN3DIR)/Anagram.$(MAN3EXT) 
+	  lib/Anagram.pm $(INST_MAN3DIR)/Anagram.$(MAN3EXT) \
+	  lib/Anagram0.pm $(INST_MAN3DIR)/Anagram0.$(MAN3EXT) 
 
 
 
@@ -859,7 +863,8 @@ ppd :
 
 pm_to_blib : $(FIRST_MAKEFILE) $(TO_INST_PM)
 	$(NOECHO) $(ABSPERLRUN) -MExtUtils::Install -e 'pm_to_blib({@ARGV}, '\''$(INST_LIB)/auto'\'', q[$(PM_FILTER)], '\''$(PERM_DIR)'\'')' -- \
-	  'lib/Anagram.pm' 'blib/lib/Anagram.pm' 
+	  'lib/Anagram.pm' 'blib/lib/Anagram.pm' \
+	  'lib/Anagram0.pm' 'blib/lib/Anagram0.pm' 
 	$(NOECHO) $(TOUCH) pm_to_blib
 
 

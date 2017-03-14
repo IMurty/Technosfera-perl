@@ -3,7 +3,7 @@ package Anagram;
 use 5.010;
 use strict;
 use warnings;
-use Encode qw(decode encode);
+
 =encoding UTF8
 
 =head1 SYNOPSIS
@@ -39,23 +39,23 @@ anagram(['пятак', 'ЛиСток', 'пятка', 'стул', 'ПяТаК', '
 
 =cut
 
+use Encode qw(decode encode);
 sub anagram {
     my $words_list = shift;
     my %result;
     foreach my $word (@$words_list) {
 		$word = lc(decode('UTF8',$word));
 		$word = encode('UTF8', $word);
-		my $have_key = return_key (\%result, $word);
-    	if ($have_key) {
-			my $arr_ref = $result{$have_key};
+		my $sort_word = str_sort($word);
+		if (exists $result{$sort_word}){
+			my $arr_ref = $result{$sort_word};
 			unless (exists_in_arr($arr_ref,$word)) {
 				push @$arr_ref, $word;
-				@$arr_ref = sort @$arr_ref;
-				$result{$have_key} = $arr_ref;
+				$result{$sort_word} = $arr_ref;
 			}
 		}
 		else {
-			$result{$word} = [$word];
+			$result{$sort_word} = [$word];
 		}
 	}
 	return rm_small_arrs(\%result);
@@ -72,25 +72,29 @@ sub return_key {
 };
 
 sub str_sort {
-	my $word = shift;
-	my @word = split '', $word;
-	my $str = join '',sort @word;
-	return lc($str);
+	return join '',sort (split '', shift);
 };
 
 sub exists_in_arr {
 	my ($arr_ref, $word) = @_;
-	return scalar grep /^$word$/, @$arr_ref;
+	return scalar grep $word eq $_, @$arr_ref;
 }
 
 sub rm_small_arrs {
 	my $hash_ref = shift;
+	my %hash;
 	foreach my $key (keys %$hash_ref) {
     	my $arr_ref = $hash_ref->{$key};
-    	if ((scalar @$arr_ref) < 2){
+    	if (@$arr_ref < 2){
         	delete $hash_ref->{$key};
     	}
+		else {
+			my $first = $arr_ref->[0];
+			@$arr_ref = sort @$arr_ref;
+			$hash{$first} = $arr_ref;
+			delete $hash_ref->{$key};
+		}
 	}
-	return $hash_ref;
+	return \%hash;
 }
 1;
