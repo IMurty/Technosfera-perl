@@ -40,47 +40,48 @@ anagram(['пятак', 'ЛиСток', 'пятка', 'стул', 'ПяТаК', '
 =cut
 
 use Encode qw(decode encode);
+
 sub anagram {
     my $words_list = shift;
-    my %result ;
+    my %result;
     foreach my $word (@$words_list) {
-		$word = lc(decode('UTF8',$word));
-		my $sort_word = str_sort($word);
-		if (exists $result{$sort_word}){
-			my $words_arr_ref = $result{$sort_word};
-			unless (exists_in_arr($words_arr_ref,$word)) {
-				push @$words_arr_ref, $word;
-				$result{$sort_word} = $words_arr_ref;
-			}
-		}
-		else {
-			$result{$sort_word} = [$word];
-		}
-	}
-	return rm_small_arrs(\%result);
-};
+        $word = lc( decode( 'UTF8', $word ) );
+        my $sort_word = str_sort($word);
+        if ( exists $result{$sort_word} ) {
+            my $words_arr_ref = $result{$sort_word};
+            unless ( exists_in_arr( $words_arr_ref, $word ) ) {
+                push @$words_arr_ref, $word;
+                $result{$sort_word} = $words_arr_ref;
+            }
+        }
+        else {
+            $result{$sort_word} = [$word];
+        }
+    }
+    return rm_small_arrs( \%result );
+}
 
 sub str_sort {
-	return join '',sort (split '', shift);
-};
+    return join '', sort ( split '', shift );
+}
 
 sub exists_in_arr {
-	my ($words_arr_ref, $word) = @_;
-	return scalar grep $word eq $_, @$words_arr_ref;
+    my ( $words_arr_ref, $word ) = @_;
+    return scalar grep $word eq $_, @$words_arr_ref;
 }
 
 sub rm_small_arrs {
-	my $unfiltred_hash_ref = shift;
-	my $filtred_hash = {};
-	foreach my $key (keys %$unfiltred_hash_ref) {
-    	my $words_arr_ref = delete $unfiltred_hash_ref->{$key};
-    	unless (@$words_arr_ref < 2){
-			@$words_arr_ref = map {encode('UTF8', $_)} @$words_arr_ref;
-			my $first_word = $words_arr_ref->[0];
-			@$words_arr_ref = sort @$words_arr_ref;
-			$filtred_hash->{$first_word} = $words_arr_ref;
-		}
-	}
-	return $filtred_hash;
+    my $unfiltred_hash_ref = shift;
+    my $filtred_hash       = {};
+    foreach my $key ( keys %$unfiltred_hash_ref ) {
+        my $words_arr_ref = delete $unfiltred_hash_ref->{$key};
+        unless ( @$words_arr_ref < 2 ) {
+            @$words_arr_ref = map { encode( 'UTF8', $_ ) } @$words_arr_ref;
+            my $first_word = $words_arr_ref->[0];
+            @$words_arr_ref = sort @$words_arr_ref;
+            $filtred_hash->{$first_word} = $words_arr_ref;
+        }
+    }
+    return $filtred_hash;
 }
 1;
