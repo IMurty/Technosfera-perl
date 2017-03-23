@@ -3,7 +3,6 @@
 use strict;
 use warnings;
 our $VERSION = 1.0;
-
 my $filepath = $ARGV[0];
 die "USAGE:\n$0 <log-file.bz2>\n"  unless $filepath;
 die "File '$filepath' not found\n" unless -f $filepath;
@@ -19,32 +18,36 @@ sub parse_file {
     my $date_ptrn = '\[(?<day>\d{2})\/(?<mounth>\w{3})\/(?<year>\d{4}):(?<hours>\d{2}):(?<minutes>\d{2}):(?<seconds>\d{2}) (?<timezone>\+\d{4})\]';
     my $status_ptrn = '(?<status>\d{3})';
     my $bytes_ptrn = '(?<bytes>\d+)';
+	my $refferer_ptrn     = '"(?<reffr>[^"]+?)"';
+   	my $user_agent_ptrn   = '"(?<user>[^"]+?)"';
     my $coefficient_ptrn  = '"(?<coefficient>[^"]+?)"';
 
     open my $fd, "-|", "bunzip2 < $file" or die "Can't open '$file': $!";
-    while (my $log_line = <$fd>) {
-		#get ip
-        $log_line =~ /^$ip_ptrn/;
-		my $ip = $+{ip};
-        $result{$ip}->{count} += 1;
-        $result{total}->{count} += 1;
-		$' =~ /^\s+$date_ptrn/;
-		#get date
-		$result{total}{minutes}{$+{day}.$+{mounth}.$+{year}.$+{hours}.$+{minutes}} = 1;
-		$result{$ip}->{minutes}->{$+{day}.$+{mounth}.$+{year}.$+{hours}.$+{minutes}} = 1;
-		#get status and bytes
-        $' =~ /\s+$status_ptrn\s+$bytes_ptrn/;
-        my $status = $+{status}+0;
-        my $data   = $+{bytes}+0;
-        $result{$ip}->{status}->{$status} += $data;
-        $result{total}->{status}->{$status} += $data;
-		#get coefficient
-        $' =~ /$coefficient_ptrn$/;
-        my $zip_coeff = $+{coefficient} eq "-" ? 1 : $+{coefficient}+0;
-		#calculation the amount of data
-		if ( $status == 200 ) {
-            $result{$ip}->{data} += int( $zip_coeff * $data );
-        	$result{total}->{data} += int( $zip_coeff * $data );
+	my $zip_coeff;
+	my $status;
+	my $data;
+
+	while (my $log_line = <$fd>) {
+		$log_line =~ /^$ip_ptrn\s+$date_ptrn\s+$refferer_ptrn\s+$status_ptrn\s+$bytes_ptrn\s+$refferer_ptrn\s+$user_agent_ptrn\s+$coefficient_ptrn$/;
+		if ($+{ip} && $+{status} && $+{coefficient}) {
+
+	        $result{$+{ip}}->{count} += 1;
+	        $result{total}->{count} += 1;
+
+			$result{total}{minutes}{$+{day}.$+{mounth}.$+{year}.$+{hours}.$+{minutes}} = 1;
+			$result{$+{ip}}->{minutes}->{$+{day}.$+{mounth}.$+{year}.$+{hours}.$+{minutes}} = 1;
+
+	        $status = $+{status}+0;
+	        $data = $+{bytes}+0;
+	        $result{$+{ip}}->{status}->{$status} += $data;
+	        $result{total}->{status}->{$status} += $data;
+
+	        $zip_coeff = $+{coefficient} eq "-" ? 1 : $+{coefficient}+0;
+
+			if ( $status == 200 ) {
+				$result{$+{ip}}->{data} += int( $zip_coeff * $data );
+				$result{total}->{data} += int( $zip_coeff * $data );
+			}
 		}
     }
     close $fd;
