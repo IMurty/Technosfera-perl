@@ -1,10 +1,9 @@
 #!/usr/bin/perl
-
 use strict;
 use warnings;
 our $VERSION = 1.0;
 my $filepath = $ARGV[0];
-die "USAGE:\n$0 <log-file>\n"  unless $filepath;
+die "USAGE:\n$0 <log-file>\n" unless $filepath;
 die "File '$filepath' not found\n" unless -f $filepath;
 
 my @parsed_data = parse_file($filepath);
@@ -21,36 +20,28 @@ sub parse_file {
     my $refferer_ptrn = '"(?<reffr>[^"]+?)"';
     my $user_agent_ptrn = '"(?<user>[^"]+?)"';
     my $coefficient_ptrn = '"(?<coefficient>[^"]+?)"';
-
     my $zip_coeff;
     my $status;
     my $data;
     my $regexp = qr(^$ip_ptrn\s+$date_ptrn\s+$refferer_ptrn\s+$status_ptrn\s+$bytes_ptrn\s+$refferer_ptrn\s+$user_agent_ptrn\s+$coefficient_ptrn$);
-
     my $fd;
-    if ($file =~ /\.bz2$/) {
+    if ( $file =~ /\.bz2$/ ) {
         open $fd, "-|", "bunzip2 < $file" or die "Can't open '$file' via bunzip2: $!";
-    } else {
+    }
+    else {
         open $fd, "<", $file or die "Can't open '$file': $!";
     }
-
     while ( my $log_line = <$fd> ) {
-
         if ( $log_line =~ /$regexp/o ) {
-
             $result{ $+{ip} }->{count} += 1;
             $result{total}->{count} += 1;
-
             $result{total}->{minutes}->{ $+{date} } = 1;
             $result{ $+{ip} }->{minutes}->{ $+{date} } = 1;
-
             $status = $+{status} + 0;
-            $data   = $+{bytes} + 0;
+            $data = $+{bytes} + 0;
             $result{ $+{ip} }->{status}->{$status} += $data;
             $result{total}->{status}->{$status} += $data;
-
             $zip_coeff = $+{coefficient} eq "-" ? 1 : $+{coefficient} + 0;
-
             if ( $status == 200 ) {
                 $result{ $+{ip} }->{data} += int( $zip_coeff * $data );
                 $result{total}->{data} += int( $zip_coeff * $data );
@@ -79,10 +70,10 @@ sub report {
     my $statuses_str = join "\t", @statuses;
     printf $header_format, @statuses;
     foreach my $ip (@$list) {
-		last unless ($ip);
+        last unless ($ip);
         my @str;
         foreach (@statuses) {
-            my $push = exists( $result->{$ip}->{status}->{$_} ) ? $result->{$ip}->{status}->{$_} / 1024: 0;
+            my $push = exists( $result->{$ip}->{status}->{$_} ) ? $result->{$ip}->{status}->{$_} / 1024 : 0;
             push @str, $push;
         }
         printf $row_format, $ip, $result->{$ip}->{count},$result->{$ip}->{average}, $result->{$ip}->{data} / 1024, @str;
