@@ -13,7 +13,7 @@ my $length = 0;
 my $avg = 0;
 $SIG{INT} = sub {
 	if ($double_tap == 1) {
-		$avg = $length/$counter if ($counter != 0);
+		eval {$avg = $length/$counter};
 
 		print STDOUT "$length $counter $avg\n";
 		exit;
@@ -34,6 +34,6 @@ if ($file) {
 	};
 	close $fh;
 	$SIG{'INT'} = 'DEFAULT';
-	$avg = $length/$counter if ($counter != 0);
+	eval {$avg = $length/$counter};
 	print STDOUT "$length $counter $avg";
 };
