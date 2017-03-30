@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+
 use strict;
 use warnings;
 our $VERSION = 1.0;
@@ -25,12 +26,15 @@ sub parse_file {
     my $data;
     my $regexp = qr(^$ip_ptrn\s+$date_ptrn\s+$refferer_ptrn\s+$status_ptrn\s+$bytes_ptrn\s+$refferer_ptrn\s+$user_agent_ptrn\s+$coefficient_ptrn$);
     my $fd;
+
     if ( $file =~ /\.bz2$/ ) {
-        open $fd, "-|", "bunzip2 < $file" or die "Can't open '$file' via bunzip2: $!";
+        open $fd, "-|", "bunzip2 < $file"
+          or die "Can't open '$file' via bunzip2: $!";
     }
     else {
         open $fd, "<", $file or die "Can't open '$file': $!";
     }
+
     while ( my $log_line = <$fd> ) {
         if ( $log_line =~ /$regexp/o ) {
             $result{ $+{ip} }->{count} += 1;
@@ -49,7 +53,8 @@ sub parse_file {
         }
     }
     close $fd;
-    my @sorted_ip_list = sort { $result{$b}->{count} <=> $result{$a}->{count} } keys %result;
+    my @sorted_ip_list = sort { $result{$b}->{count} <=> $result{$a}->{count} } grep ($_ ne "total", keys %result);
+	unshift (@sorted_ip_list, 'total');
     foreach ( @sorted_ip_list[ 11 .. $#sorted_ip_list ] ) {
         delete $result{$_};
     }
