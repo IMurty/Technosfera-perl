@@ -2,33 +2,38 @@
 
 use strict;
 use warnings;
-
-use 5.010;
 use Getopt::Long qw(GetOptions);
 my $filepath = $ARGV[0];
 die "USAGE:\n --file <name of file>\n"  unless $filepath;
 my $file;
 GetOptions('file=s' => \$file) or die "Usage:\n --file <name of file>\n";
-
+my $double_tap = 0;
+my $counter = 0;
+my $length = 0;
+my $avg = 0;
 $SIG{INT} = sub {
-	warn 'Double Ctrl+C for exit';
-	$SIG{INT} = 'DEFAULT';
-	};
+	if ($double_tap == 1) {
+		$avg = $length/$counter if ($counter != 0);
 
+		print STDOUT "$length $counter $avg\n";
+		exit;
+	}
+	else {
+		print STDERR "Double Ctrl+C for exit";
+		$double_tap = 1;
+	}
+};
 if ($file) {
-    say "Get ready";
+    print STDOUT "Get ready\n";
 	open(my $fh, '>', $file) or die $!;
-	select ($fh);
-	my $counter = 0;
-	my $length = 0;
 	while (my $str = <STDIN>) {
-		print $str;
+		print $fh $str;
 		$counter++;
 		chomp $str;
 		$length += length $str;
 	};
 	close $fh;
-	select (STDOUT);
-	my $size = -s $file;
-	say $length." ".$counter." ".$length/$counter;
+	$SIG{'INT'} = 'DEFAULT';
+	$avg = $length/$counter if ($counter != 0);
+	print STDOUT "$length $counter $avg";
 };
