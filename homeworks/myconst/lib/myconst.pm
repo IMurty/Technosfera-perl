@@ -53,6 +53,9 @@ sub import {
     for my $key ( keys %CONSTANTS ) {
         *{"$caller::$key"} = sub() { $CONSTANTS{$key}; };
     };
+	@{"$caller"."::ISA"} = qw/Exporter/;
+	@{"$caller"."::EXPORT"} = @{$GROUPS{all}};
+	%{"$caller"."::EXPORT_TAGS"} = %GROUPS;
 };
 
 sub parse_hash {
@@ -74,6 +77,5 @@ sub parse_hash {
 		}
     }
 };
-
 
 1;
